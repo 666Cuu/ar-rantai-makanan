@@ -21,17 +21,16 @@
         arjs="sourceType: webcam;">
 
         <!-- MARKER HIRO -->
-        <a-marker preset="hiro">
+      <a-marker
+    type="pattern"
+    url="https://666cuu.github.io/ar-rantai-makanan/pattern-marker.patt">
 
-            <!-- OBJEK 3D PERCOBAAN -->
-            <a-box
-                position="0 0.5 0"
-                rotation="0 0 0"
-                color="green"
-                scale="1 1 1">
-            </a-box>
+    <a-box
+        position="0 0.5 0"
+        material="color: green;">
+    </a-box>
 
-        </a-marker>
+</a-marker>
 
         <!-- KAMERA -->
         <a-entity camera></a-entity>
