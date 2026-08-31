@@ -10,9 +10,6 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <style>
-        #arjs-video {
-            object-fit: contain !important;
-        }
         #info {
             position: fixed;
             bottom: 12px;
@@ -35,7 +32,7 @@
     <a-scene
         embedded
         vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam;">
+        arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960;">
 
         <a-marker
             type="pattern"
@@ -81,16 +78,6 @@
 
     </a-scene>
 
-    <script>
-        window.addEventListener("load", function () {
-            const video = document.getElementById("arjs-video");
-            if (video) {
-                video.style.objectFit = "contain";
-                video.style.width = "100vw";
-                video.style.height = "100vh";
-            }
-        });
-    </script>
 
 </body>
 </html>
