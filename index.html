@@ -15,10 +15,17 @@
 
 <body style="margin: 0; overflow: hidden;">
 
-    <a-scene
-        embedded
-        vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam;">
+    <<a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="antialias: true; alpha: true"
+    arjs="
+        sourceType: webcam;
+        sourceWidth: 1280;
+        sourceHeight: 720;
+        displayWidth: 1280;
+        displayHeight: 720;
+    ">
 
         <!-- MARKER HIRO -->
       <a-marker
