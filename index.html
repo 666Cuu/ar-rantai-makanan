@@ -1,176 +1,332 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>AR Ekosistem Sawah</title>
 
-    <!-- A-Frame -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
 
-    <!-- MindAR -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <!-- ========================= -->
+    <!-- A-FRAME -->
+    <!-- ========================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js">
+    </script>
+
+
+    <!-- ========================= -->
+    <!-- MINDAR -->
+    <!-- ========================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js">
+    </script>
+
+
+    <!-- ========================= -->
+    <!-- STYLE -->
+    <!-- ========================= -->
 
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
 
+
+        /* ========================= */
+        /* PETUNJUK BAWAH */
+        /* ========================= */
+
         #info {
             position: fixed;
+
+            left: 15px;
+            right: 15px;
             bottom: 12px;
-            left: 10px;
-            right: 10px;
+
             text-align: center;
+
             color: white;
-            text-shadow: 0 0 4px black;
-            z-index: 999;
+
+            text-shadow:
+                0 0 4px black;
+
+            z-index: 1000;
+
             pointer-events: none;
-            font-size: 14px;
+
+            font-size: 13px;
         }
+
+
+        /* ========================= */
+        /* JUDUL ATAS */
+        /* ========================= */
+
+        #titleAR {
+
+            position: fixed;
+
+            top: 15px;
+
+            left: 5%;
+            right: 5%;
+
+            padding: 10px 15px;
+
+            background:
+                rgba(0, 0, 0, 0.65);
+
+            border-radius: 15px;
+
+            color: #FFEB3B;
+
+            text-align: center;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            z-index: 1000;
+
+            pointer-events: none;
+        }
+
+
+        /* ========================= */
+        /* KETERANGAN RANTAI */
+        /* ========================= */
+
+        #chain {
+
+            position: fixed;
+
+            top: 62px;
+
+            left: 3%;
+            right: 3%;
+
+            padding: 7px;
+
+            background:
+                rgba(0, 0, 0, 0.55);
+
+            border-radius: 12px;
+
+            color: white;
+
+            text-align: center;
+
+            font-size: 11px;
+
+            z-index: 1000;
+
+            pointer-events: none;
+        }
+
 
         /* ========================= */
         /* PANEL INFORMASI */
         /* ========================= */
 
         #informationPanel {
+
             display: none;
+
             position: fixed;
+
             left: 5%;
             right: 5%;
-            bottom: 65px;
 
-            background: rgba(0, 0, 0, 0.88);
+            bottom: 48px;
+
+            background:
+                rgba(20, 20, 20, 0.94);
+
             color: white;
 
-            padding: 18px;
+            padding: 15px;
+
             border-radius: 18px;
 
-            z-index: 2000;
+            z-index: 3000;
 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-
-            box-sizing: border-box;
+            box-shadow:
+                0 5px 25px
+                rgba(0,0,0,0.55);
         }
+
 
         #informationPanel h2 {
-            margin: 0 0 8px 0;
+
+            margin: 0 30px 8px 0;
+
             text-align: center;
+
             color: #FFEB3B;
-            font-size: 22px;
+
+            font-size: 20px;
         }
+
 
         #informationPanel p {
-            margin: 6px 0;
-            line-height: 1.5;
-            font-size: 15px;
+
+            margin: 5px 0;
+
+            line-height: 1.4;
+
+            font-size: 14px;
         }
 
-        #closeInfo {
-            position: absolute;
-            top: 7px;
-            right: 12px;
 
-            background: transparent;
+        #closeInfo {
+
+            position: absolute;
+
+            top: 5px;
+            right: 10px;
+
             border: none;
 
+            background: transparent;
+
             color: white;
-            font-size: 24px;
+
+            font-size: 25px;
+
+            cursor: pointer;
+        }
+
+
+        #infoRole {
+
+            color: #81D4FA;
+
             font-weight: bold;
         }
 
-        #rantaiInfo {
-            position: fixed;
-            top: 15px;
-            left: 5%;
-            right: 5%;
 
-            background: rgba(0, 0, 0, 0.72);
-            color: white;
-
-            padding: 10px 14px;
-
-            border-radius: 14px;
-
-            text-align: center;
-
-            z-index: 1000;
-
-            font-size: 13px;
-        }
-
-        #rantaiInfo strong {
-            color: #FFEB3B;
-        }
     </style>
 
 
-    <!--
-        SCRIPT UNTUK INTERAKSI MODEL
-    -->
+    <!-- ========================= -->
+    <!-- SCRIPT INTERAKSI -->
+    <!-- ========================= -->
+
     <script>
 
-        AFRAME.registerComponent('info-object', {
+        AFRAME.registerComponent(
+            'info-object',
+            {
 
-            schema: {
-                name: { type: 'string' },
-                description: { type: 'string' },
-                role: { type: 'string' }
-            },
+                schema: {
 
-            init: function () {
+                    name: {
+                        type: 'string'
+                    },
 
-                const data = this.data;
+                    role: {
+                        type: 'string'
+                    },
 
-                this.el.addEventListener('click', function () {
+                    description: {
+                        type: 'string'
+                    }
 
-                    showInformation(
-                        data.name,
-                        data.description,
-                        data.role
+                },
+
+
+                init: function () {
+
+                    const data = this.data;
+
+
+                    /* Klik */
+
+                    this.el.addEventListener(
+                        'click',
+                        function () {
+
+                            showInformation(
+                                data.name,
+                                data.role,
+                                data.description
+                            );
+
+                        }
                     );
 
-                });
 
-                /*
-                 * Event touch untuk HP
-                 */
-                this.el.addEventListener('touchstart', function () {
+                    /* Touch */
 
-                    showInformation(
-                        data.name,
-                        data.description,
-                        data.role
+                    this.el.addEventListener(
+                        'touchstart',
+                        function () {
+
+                            showInformation(
+                                data.name,
+                                data.role,
+                                data.description
+                            );
+
+                        }
                     );
 
-                });
+                }
 
             }
+        );
 
-        });
+
+        function showInformation(
+            name,
+            role,
+            description
+        ) {
+
+            document
+                .getElementById("infoTitle")
+                .innerText = name;
 
 
-        function showInformation(name, description, role) {
+            document
+                .getElementById("infoRole")
+                .innerText = role;
 
-            document.getElementById("infoTitle").innerText = name;
 
-            document.getElementById("infoDescription").innerText =
+            document
+                .getElementById("infoDescription")
+                .innerText =
                 description;
 
-            document.getElementById("infoRole").innerText =
-                role;
 
-            document.getElementById("informationPanel").style.display =
+            document
+                .getElementById("informationPanel")
+                .style.display =
                 "block";
+
         }
 
 
         function closeInformation() {
 
-            document.getElementById("informationPanel").style.display =
+            document
+                .getElementById("informationPanel")
+                .style.display =
                 "none";
 
         }
@@ -184,19 +340,30 @@
 
 
     <!-- ========================= -->
-    <!-- JUDUL RANTAI MAKANAN -->
+    <!-- JUDUL -->
     <!-- ========================= -->
 
-    <div id="rantaiInfo">
+    <div id="titleAR">
 
-        <strong>Rantai Makanan Sawah</strong>
+        🌾 RANTAI MAKANAN SAWAH
 
-        <br>
+    </div>
 
-        🌱 Rumput →
-        🦗 Belalang →
-        🐸 Katak →
-        🐍 Ular →
+
+    <!-- ========================= -->
+    <!-- ALUR RANTAI -->
+    <!-- ========================= -->
+
+    <div id="chain">
+
+        🌱 Rumput
+        →
+        🦗 Belalang
+        →
+        🐸 Katak
+        →
+        🐍 Ular
+        →
         🦅 Elang
 
     </div>
@@ -208,23 +375,31 @@
 
     <div id="informationPanel">
 
-        <button id="closeInfo" onclick="closeInformation()">
+        <button
+            id="closeInfo"
+            onclick="closeInformation()"
+        >
             ×
         </button>
+
 
         <h2 id="infoTitle">
             Informasi
         </h2>
 
+
         <p>
             <strong>Peran dalam rantai makanan:</strong>
         </p>
 
+
         <p id="infoRole"></p>
+
 
         <p>
             <strong>Penjelasan:</strong>
         </p>
+
 
         <p id="infoDescription"></p>
 
@@ -237,8 +412,7 @@
 
     <div id="info">
 
-        Arahkan kamera ke marker lalu sentuh objek
-        untuk melihat informasi 🌾
+        Sentuh objek untuk melihat informasi
 
     </div>
 
@@ -274,6 +448,7 @@
 
         raycaster="
             objects: .clickable;
+            far: 10000;
         "
     >
 
@@ -284,30 +459,46 @@
 
         <a-assets>
 
+
+            <!-- RUMPUT -->
+
             <a-asset-item
                 id="rumputModel"
                 src="./models/grass.glb">
             </a-asset-item>
+
+
+            <!-- BELALANG -->
 
             <a-asset-item
                 id="belalangModel"
                 src="./models/grasshopper.glb">
             </a-asset-item>
 
+
+            <!-- KATAK -->
+
             <a-asset-item
                 id="katakModel"
                 src="./models/frog.glb">
             </a-asset-item>
+
+
+            <!-- ULAR -->
 
             <a-asset-item
                 id="ularModel"
                 src="./models/snake.glb">
             </a-asset-item>
 
+
+            <!-- ELANG -->
+
             <a-asset-item
                 id="elangModel"
                 src="./models/hawk.glb">
             </a-asset-item>
+
 
         </a-assets>
 
@@ -318,24 +509,29 @@
 
         <a-camera
             position="0 0 0"
-            look-controls="enabled: false">
+            look-controls="enabled: false"
+        >
         </a-camera>
 
 
         <!-- ========================= -->
-        <!-- IMAGE TARGET -->
+        <!-- TARGET MINDAR -->
         <!-- ========================= -->
 
         <a-entity
-            mindar-image-target="targetIndex: 0">
+            mindar-image-target="
+                targetIndex: 0;
+            "
+        >
 
 
-            <!-- ========================= -->
+            <!-- ================================================= -->
             <!-- RUMPUT -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
 
             <a-entity
-                position="-0.65 0.02 0">
+                position="-0.72 0.03 0"
+            >
 
                 <a-gltf-model
 
@@ -347,34 +543,53 @@
 
                     rotation="0 0 0"
 
-                    scale="0.055 0.055 0.055"
+                    scale="
+                        0.020
+                        0.020
+                        0.020
+                    "
 
                     info-object="
                         name: Rumput;
                         role: Produsen;
-                        description: Rumput merupakan produsen dalam rantai makanan. Rumput membuat makanannya sendiri melalui proses fotosintesis dan menjadi sumber makanan bagi belalang.;
+                        description: Rumput adalah produsen dalam rantai makanan. Rumput membuat makanan sendiri melalui fotosintesis dan menjadi sumber makanan bagi belalang.
                     "
                 >
                 </a-gltf-model>
 
 
                 <a-text
+
                     value="Rumput"
+
                     align="center"
+
                     color="white"
-                    position="0 -0.10 0"
-                    scale="0.40 0.40 0.40">
+
+                    position="
+                        0
+                        -0.07
+                        0
+                    "
+
+                    scale="
+                        0.35
+                        0.35
+                        0.35
+                    "
+                >
                 </a-text>
 
             </a-entity>
 
 
-            <!-- ========================= -->
+            <!-- ================================================= -->
             <!-- BELALANG -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
 
             <a-entity
-                position="-0.32 0.04 0">
+                position="-0.36 0.03 0"
+            >
 
                 <a-gltf-model
 
@@ -382,38 +597,57 @@
 
                     src="#belalangModel"
 
-                    position="0 0.03 0"
+                    position="0 0.025 0"
 
                     rotation="0 0 0"
 
-                    scale="0.045 0.045 0.045"
+                    scale="
+                        0.008
+                        0.008
+                        0.008
+                    "
 
                     info-object="
                         name: Belalang;
                         role: Konsumen tingkat I;
-                        description: Belalang memakan rumput sehingga mendapatkan energi dari produsen. Belalang kemudian menjadi makanan bagi katak.;
+                        description: Belalang memakan rumput untuk memperoleh energi. Belalang kemudian menjadi makanan bagi katak.
                     "
                 >
                 </a-gltf-model>
 
 
                 <a-text
+
                     value="Belalang"
+
                     align="center"
+
                     color="white"
-                    position="0 -0.08 0"
-                    scale="0.40 0.40 0.40">
+
+                    position="
+                        0
+                        -0.055
+                        0
+                    "
+
+                    scale="
+                        0.35
+                        0.35
+                        0.35
+                    "
+                >
                 </a-text>
 
             </a-entity>
 
 
-            <!-- ========================= -->
+            <!-- ================================================= -->
             <!-- KATAK -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
 
             <a-entity
-                position="0 0.04 0">
+                position="0 0.03 0"
+            >
 
                 <a-gltf-model
 
@@ -421,38 +655,57 @@
 
                     src="#katakModel"
 
-                    position="0 0.04 0"
+                    position="0 0.035 0"
 
                     rotation="0 0 0"
 
-                    scale="0.055 0.055 0.055"
+                    scale="
+                        0.030
+                        0.030
+                        0.030
+                    "
 
                     info-object="
                         name: Katak;
                         role: Konsumen tingkat II;
-                        description: Katak memakan belalang dan serangga lainnya. Katak kemudian menjadi makanan bagi ular dalam rantai makanan sawah.;
+                        description: Katak memakan belalang dan serangga lainnya. Katak kemudian dapat dimakan oleh ular.
                     "
                 >
                 </a-gltf-model>
 
 
                 <a-text
+
                     value="Katak"
+
                     align="center"
+
                     color="white"
-                    position="0 -0.08 0"
-                    scale="0.40 0.40 0.40">
+
+                    position="
+                        0
+                        -0.065
+                        0
+                    "
+
+                    scale="
+                        0.35
+                        0.35
+                        0.35
+                    "
+                >
                 </a-text>
 
             </a-entity>
 
 
-            <!-- ========================= -->
+            <!-- ================================================= -->
             <!-- ULAR -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
 
             <a-entity
-                position="0.35 0.04 0">
+                position="0.36 0.03 0"
+            >
 
                 <a-gltf-model
 
@@ -460,38 +713,57 @@
 
                     src="#ularModel"
 
-                    position="0 0.04 0"
+                    position="0 0.035 0"
 
                     rotation="0 0 0"
 
-                    scale="0.065 0.065 0.065"
+                    scale="
+                        0.030
+                        0.030
+                        0.030
+                    "
 
                     info-object="
                         name: Ular;
                         role: Konsumen tingkat III;
-                        description: Ular dapat memakan katak dan hewan kecil lainnya. Ular kemudian menjadi salah satu mangsa bagi elang.;
+                        description: Ular memakan katak dan hewan kecil lainnya. Ular kemudian menjadi mangsa bagi elang.
                     "
                 >
                 </a-gltf-model>
 
 
                 <a-text
+
                     value="Ular"
+
                     align="center"
+
                     color="white"
-                    position="0 -0.08 0"
-                    scale="0.40 0.40 0.40">
+
+                    position="
+                        0
+                        -0.065
+                        0
+                    "
+
+                    scale="
+                        0.35
+                        0.35
+                        0.35
+                    "
+                >
                 </a-text>
 
             </a-entity>
 
 
-            <!-- ========================= -->
+            <!-- ================================================= -->
             <!-- ELANG -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
 
             <a-entity
-                position="0 0.48 0">
+                position="0 0.43 0"
+            >
 
                 <a-gltf-model
 
@@ -503,45 +775,44 @@
 
                     rotation="0 0 0"
 
-                    scale="0.075 0.075 0.075"
+                    scale="
+                        0.040
+                        0.040
+                        0.040
+                    "
 
                     info-object="
                         name: Elang;
                         role: Konsumen tingkat IV / Predator puncak;
-                        description: Elang merupakan predator tingkat tinggi dalam rantai makanan sawah. Elang dapat memangsa ular dan hewan lainnya.;
+                        description: Elang merupakan predator tingkat tinggi dalam rantai makanan sawah. Elang dapat memangsa ular dan hewan lainnya.
                     "
                 >
                 </a-gltf-model>
 
 
                 <a-text
+
                     value="Elang"
+
                     align="center"
+
                     color="white"
-                    position="0 -0.14 0"
-                    scale="0.40 0.40 0.40">
+
+                    position="
+                        0
+                        -0.10
+                        0
+                    "
+
+                    scale="
+                        0.35
+                        0.35
+                        0.35
+                    "
+                >
                 </a-text>
 
             </a-entity>
-
-
-            <!-- ========================= -->
-            <!-- JUDUL -->
-            <!-- ========================= -->
-
-            <a-text
-
-                value="Rantai Makanan Sawah"
-
-                align="center"
-
-                color="#FFEB3B"
-
-                position="0 0.82 0"
-
-                scale="0.65 0.65 0.65">
-
-            </a-text>
 
 
         </a-entity>
@@ -549,4 +820,5 @@
     </a-scene>
 
 </body>
+
 </html>
