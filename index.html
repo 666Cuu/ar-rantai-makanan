@@ -1,83 +1,259 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Ekosistem Sawah</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+```
+<title>AR Ekosistem Sawah</title>
 
-    <style>
-        body { margin: 0; overflow: hidden; }
-        #info {
-            position: fixed;
-            bottom: 12px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            text-shadow: 0 0 4px black;
-            z-index: 999;
-            pointer-events: none;
-            font-size: 14px;
-            font-family: sans-serif;
-        }
-    </style>
+<!-- A-Frame -->
+<script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
+
+<!-- MindAR -->
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+    }
+
+    #info {
+        position: fixed;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: white;
+        text-shadow: 0 0 4px black;
+        z-index: 999;
+        pointer-events: none;
+        font-size: 14px;
+        font-family: sans-serif;
+    }
+</style>
+```
+
 </head>
 
 <body>
 
-    <div id="info">Arahkan kamera ke marker untuk melihat rantai makanan sawah 🌾</div>
+```
+<div id="info">
+    Arahkan kamera ke marker untuk melihat rantai makanan sawah 🌾
+</div>
 
-    <a-scene
-        mindar-image="imageTargetSrc: ./marker-ekosistem-sawah-inner.mind; autoStart: true; uiScanning: yes; uiLoading: yes;"
-        color-space="sRGB"
-        renderer="colorManagement: true, physicallyCorrectLights"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-    >
-        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000;"></a-camera>
+<a-scene
+    mindar-image="
+        imageTargetSrc: ./marker-ekosistem-sawah-inner.mind;
+        autoStart: true;
+        uiScanning: yes;
+        uiLoading: yes;
+    "
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+>
 
-        <a-entity mindar-image-target="targetIndex: 0">
+    <!-- ========================= -->
+    <!-- MODEL 3D -->
+    <!-- ========================= -->
 
-            <!-- Rumput -->
-            <a-entity position="-0.8 0.1 0">
-                <a-cone color="#4CAF50" radius-bottom="0.15" radius-top="0" height="0.3" position="0 0.15 0"></a-cone>
-                <a-text value="Rumput" align="center" color="white" position="0 -0.05 0" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
+    <a-assets>
 
-            <!-- Belalang -->
-            <a-entity position="-0.4 0.1 0">
-                <a-sphere color="#8BC34A" radius="0.12" position="0 0.15 0"></a-sphere>
-                <a-text value="Belalang" align="center" color="white" position="0 -0.05 0" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
+        <!-- Rumput -->
+        <a-asset-item
+            id="rumputModel"
+            src="./models/grass.glb">
+        </a-asset-item>
 
-            <!-- Katak -->
-            <a-entity position="0 0.1 0">
-                <a-sphere color="#2E7D32" radius="0.15" position="0 0.15 0"></a-sphere>
-                <a-text value="Katak" align="center" color="white" position="0 -0.05 0" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
+        <!-- Belalang -->
+        <a-asset-item
+            id="belalangModel"
+            src="./models/grasshopper.glb">
+        </a-asset-item>
 
-            <!-- Ular -->
-            <a-entity position="0.4 0.1 0">
-                <a-cylinder color="#795548" radius="0.06" height="0.4" rotation="0 0 90" position="0 0.15 0"></a-cylinder>
-                <a-text value="Ular" align="center" color="white" position="0 -0.05 0" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
+        <!-- Katak -->
+        <a-asset-item
+            id="katakModel"
+            src="./models/frog.glb">
+        </a-asset-item>
 
-            <!-- Elang -->
-            <a-entity position="0 0.6 0">
-                <a-cone color="#5D4037" radius-bottom="0.2" radius-top="0" height="0.15" rotation="0 0 -90" position="-0.2 0 0"></a-cone>
-                <a-cone color="#5D4037" radius-bottom="0.2" radius-top="0" height="0.15" rotation="0 0 90" position="0.2 0 0"></a-cone>
-                <a-sphere color="#3E2723" radius="0.1" position="0 0 0"></a-sphere>
-                <a-text value="Elang" align="center" color="white" position="0 -0.2 0" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
+        <!-- Ular -->
+        <a-asset-item
+            id="ularModel"
+            src="./models/snake.glb">
+        </a-asset-item>
 
-            <a-text value="Rantai Makanan Sawah" align="center" color="#FFEB3B" position="0 1 0" scale="1 1 1"></a-text>
+        <!-- Elang -->
+        <a-asset-item
+            id="elangModel"
+            src="./models/hawk.glb">
+        </a-asset-item>
 
-        </a-entity>
+    </a-assets>
 
-    </a-scene>
+
+    <!-- ========================= -->
+    <!-- KAMERA -->
+    <!-- ========================= -->
+
+    <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="far: 10000;">
+    </a-camera>
+
+
+    <!-- ========================= -->
+    <!-- IMAGE TARGET -->
+    <!-- ========================= -->
+
+    <a-entity mindar-image-target="targetIndex: 0">
+
+```
+<!-- ========================= -->
+<!-- RUMPUT -->
+<!-- ========================= -->
+
+<a-entity position="-0.8 0.05 0">
+
+    <a-gltf-model
+        src="#rumputModel"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="0.25 0.25 0.25">
+    </a-gltf-model>
+
+    <a-text
+        value="Rumput"
+        align="center"
+        color="white"
+        position="0 -0.12 0"
+        scale="0.55 0.55 0.55">
+    </a-text>
+
+</a-entity>
+
+
+<!-- ========================= -->
+<!-- BELALANG -->
+<!-- ========================= -->
+
+<a-entity position="-0.4 0.08 0">
+
+    <a-gltf-model
+        src="#belalangModel"
+        position="0 0.08 0"
+        rotation="0 0 0"
+        scale="0.18 0.18 0.18">
+    </a-gltf-model>
+
+    <a-text
+        value="Belalang"
+        align="center"
+        color="white"
+        position="0 -0.10 0"
+        scale="0.55 0.55 0.55">
+    </a-text>
+
+</a-entity>
+
+
+<!-- ========================= -->
+<!-- KATAK -->
+<!-- ========================= -->
+
+<a-entity position="0 0.08 0">
+
+    <a-gltf-model
+        src="#katakModel"
+        position="0 0.10 0"
+        rotation="0 0 0"
+        scale="0.25 0.25 0.25">
+    </a-gltf-model>
+
+    <a-text
+        value="Katak"
+        align="center"
+        color="white"
+        position="0 -0.10 0"
+        scale="0.55 0.55 0.55">
+    </a-text>
+
+</a-entity>
+
+
+<!-- ========================= -->
+<!-- ULAR -->
+<!-- ========================= -->
+
+<a-entity position="0.4 0.08 0">
+
+    <a-gltf-model
+        src="#ularModel"
+        position="0 0.10 0"
+        rotation="0 0 0"
+        scale="0.30 0.30 0.30">
+    </a-gltf-model>
+
+    <a-text
+        value="Ular"
+        align="center"
+        color="white"
+        position="0 -0.10 0"
+        scale="0.55 0.55 0.55">
+    </a-text>
+
+</a-entity>
+
+
+<!-- ========================= -->
+<!-- ELANG -->
+<!-- ========================= -->
+
+<a-entity position="0 0.62 0">
+
+    <a-gltf-model
+        src="#elangModel"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="0.35 0.35 0.35">
+    </a-gltf-model>
+
+    <a-text
+        value="Elang"
+        align="center"
+        color="white"
+        position="0 -0.22 0"
+        scale="0.55 0.55 0.55">
+    </a-text>
+
+</a-entity>
+
+
+<!-- ========================= -->
+<!-- JUDUL -->
+<!-- ========================= -->
+
+<a-text
+    value="Rantai Makanan Sawah"
+    align="center"
+    color="#FFEB3B"
+    position="0 1.05 0"
+    scale="0.9 0.9 0.9">
+</a-text>
+```
+
+</a-entity>
+
+
+</a-scene>
+```
 
 </body>
 </html>
