@@ -276,110 +276,6 @@
             }
         );
 
-        (function () {
-          try {
-
-            const sceneEl = document.querySelector('a-scene');
-
-            function handleTap(clientX, clientY) {
-                const camera = sceneEl.camera;
-                if (!camera) {
-                    console.warn('[AR-tap] kamera belum siap');
-                    return;
-                }
-
-                const canvas = sceneEl.canvas;
-                const rect = canvas.getBoundingClientRect();
-
-                const mouse = new AFRAME.THREE.Vector2();
-                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-
-                const raycaster = new AFRAME.THREE.Raycaster();
-                raycaster.setFromCamera(mouse, camera);
-
-                const clickableEls = document.querySelectorAll('.clickable');
-                const objects = [];
-                clickableEls.forEach(function (el) {
-                    if (el.object3D) objects.push(el.object3D);
-                });
-
-                const intersects = raycaster.intersectObjects(objects, true);
-                console.log('[AR-tap] clickable els:', clickableEls.length, '| intersects:', intersects.length);
-
-                if (intersects.length > 0) {
-                    let obj = intersects[0].object;
-                    while (obj && !obj.el) {
-                        obj = obj.parent;
-                    }
-                    if (obj && obj.el) {
-                        const data = obj.el.getAttribute('info-object');
-                        console.log('[AR-tap] kena entity:', obj.el, '| data:', data);
-                        if (data && data.name) {
-                            showInformation(data.name, data.role, data.description);
-                        }
-                    } else {
-                        console.log('[AR-tap] tidak nemu entity dengan .el');
-                    }
-                }
-            }
-
-            function attachHandlers() {
-                const canvas = sceneEl.canvas;
-                if (!canvas) {
-                    console.warn('[AR-tap] canvas belum ada, coba lagi sebentar...');
-                    setTimeout(attachHandlers, 300);
-                    return;
-                }
-
-                let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isMultiTouch = false;
-
-                canvas.addEventListener('touchstart', function (e) {
-                    if (e.touches.length === 1) {
-                        touchStartX = e.touches[0].clientX;
-                        touchStartY = e.touches[0].clientY;
-                        touchStartTime = Date.now();
-                        isMultiTouch = false;
-                    } else if (e.touches.length >= 2) {
-                        isMultiTouch = true;
-                    }
-                }, { passive: true });
-
-                canvas.addEventListener('touchend', function (e) {
-                    if (isMultiTouch) return;
-                    if (e.changedTouches.length !== 1) return;
-
-                    const dx = e.changedTouches[0].clientX - touchStartX;
-                    const dy = e.changedTouches[0].clientY - touchStartY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const duration = Date.now() - touchStartTime;
-
-                    // Anggap "tap" kalau jari tidak banyak bergeser & cepat (bukan drag/pinch)
-                    if (dist < 20 && duration < 600) {
-                        handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-                    }
-                }, { passive: true });
-
-                // Untuk testing pakai mouse di desktop/laptop
-                canvas.addEventListener('click', function (e) {
-                    handleTap(e.clientX, e.clientY);
-                });
-
-                console.log('[AR-tap] handler tap terpasang di canvas:', canvas);
-            }
-
-            console.log('[AR-tap] script mulai jalan, sceneEl:', sceneEl);
-
-            // Jangan bergantung pada event 'loaded' -- di MindAR kadang tidak fire normal.
-            // Langsung mulai polling sampai canvas siap.
-            attachHandlers();
-
-          } catch (err) {
-            console.error('[AR-tap] ERROR saat setup:', err);
-          }
-        })();
-
-
 
         function showInformation(
             name,
@@ -925,6 +821,113 @@
         </a-entity>
 
     </a-scene>
+
+
+    <!-- ========================= -->
+    <!-- SCRIPT TAP UNTUK INFO -->
+    <!-- ========================= -->
+
+    <script>
+
+        (function () {
+          try {
+
+            const sceneEl = document.querySelector('a-scene');
+            console.log('[AR-tap] script mulai jalan, sceneEl:', sceneEl);
+
+            function handleTap(clientX, clientY) {
+                const camera = sceneEl.camera;
+                if (!camera) {
+                    console.warn('[AR-tap] kamera belum siap');
+                    return;
+                }
+
+                const canvas = sceneEl.canvas;
+                const rect = canvas.getBoundingClientRect();
+
+                const mouse = new AFRAME.THREE.Vector2();
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+                const raycaster = new AFRAME.THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+
+                const clickableEls = document.querySelectorAll('.clickable');
+                const objects = [];
+                clickableEls.forEach(function (el) {
+                    if (el.object3D) objects.push(el.object3D);
+                });
+
+                const intersects = raycaster.intersectObjects(objects, true);
+                console.log('[AR-tap] clickable els:', clickableEls.length, '| intersects:', intersects.length);
+
+                if (intersects.length > 0) {
+                    let obj = intersects[0].object;
+                    while (obj && !obj.el) {
+                        obj = obj.parent;
+                    }
+                    if (obj && obj.el) {
+                        const data = obj.el.getAttribute('info-object');
+                        console.log('[AR-tap] kena entity:', obj.el, '| data:', data);
+                        if (data && data.name) {
+                            showInformation(data.name, data.role, data.description);
+                        }
+                    } else {
+                        console.log('[AR-tap] tidak nemu entity dengan .el');
+                    }
+                }
+            }
+
+            function attachHandlers() {
+                const canvas = sceneEl.canvas;
+                if (!canvas) {
+                    console.warn('[AR-tap] canvas belum ada, coba lagi sebentar...');
+                    setTimeout(attachHandlers, 300);
+                    return;
+                }
+
+                let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isMultiTouch = false;
+
+                canvas.addEventListener('touchstart', function (e) {
+                    if (e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                        touchStartTime = Date.now();
+                        isMultiTouch = false;
+                    } else if (e.touches.length >= 2) {
+                        isMultiTouch = true;
+                    }
+                }, { passive: true });
+
+                canvas.addEventListener('touchend', function (e) {
+                    if (isMultiTouch) return;
+                    if (e.changedTouches.length !== 1) return;
+
+                    const dx = e.changedTouches[0].clientX - touchStartX;
+                    const dy = e.changedTouches[0].clientY - touchStartY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const duration = Date.now() - touchStartTime;
+
+                    if (dist < 20 && duration < 600) {
+                        handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                    }
+                }, { passive: true });
+
+                canvas.addEventListener('click', function (e) {
+                    handleTap(e.clientX, e.clientY);
+                });
+
+                console.log('[AR-tap] handler tap terpasang di canvas:', canvas);
+            }
+
+            attachHandlers();
+
+          } catch (err) {
+            console.error('[AR-tap] ERROR saat setup:', err);
+          }
+        })();
+
+    </script>
 
 
     <!-- ========================= -->
