@@ -278,7 +278,10 @@
 
             function handleTap(clientX, clientY) {
                 const camera = sceneEl.camera;
-                if (!camera) return;
+                if (!camera) {
+                    console.warn('[AR-tap] kamera belum siap');
+                    return;
+                }
 
                 const canvas = sceneEl.canvas;
                 const rect = canvas.getBoundingClientRect();
@@ -297,6 +300,7 @@
                 });
 
                 const intersects = raycaster.intersectObjects(objects, true);
+                console.log('[AR-tap] clickable els:', clickableEls.length, '| intersects:', intersects.length);
 
                 if (intersects.length > 0) {
                     let obj = intersects[0].object;
@@ -305,22 +309,65 @@
                     }
                     if (obj && obj.el) {
                         const data = obj.el.getAttribute('info-object');
-                        if (data) {
+                        console.log('[AR-tap] kena entity:', obj.el, '| data:', data);
+                        if (data && data.name) {
                             showInformation(data.name, data.role, data.description);
                         }
+                    } else {
+                        console.log('[AR-tap] tidak nemu entity dengan .el');
                     }
                 }
             }
 
-            sceneEl.addEventListener('loaded', function () {
+            function attachHandlers() {
                 const canvas = sceneEl.canvas;
+                if (!canvas) {
+                    console.warn('[AR-tap] canvas belum ada, coba lagi sebentar...');
+                    setTimeout(attachHandlers, 300);
+                    return;
+                }
 
-                // 'click' fires baik dari mouse klik maupun tap 1 jari di HP,
-                // tapi TIDAK fire saat gesture 2 jari (pinch) -- jadi aman dipakai bareng zoom
+                let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isMultiTouch = false;
+
+                canvas.addEventListener('touchstart', function (e) {
+                    if (e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                        touchStartTime = Date.now();
+                        isMultiTouch = false;
+                    } else if (e.touches.length >= 2) {
+                        isMultiTouch = true;
+                    }
+                }, { passive: true });
+
+                canvas.addEventListener('touchend', function (e) {
+                    if (isMultiTouch) return;
+                    if (e.changedTouches.length !== 1) return;
+
+                    const dx = e.changedTouches[0].clientX - touchStartX;
+                    const dy = e.changedTouches[0].clientY - touchStartY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const duration = Date.now() - touchStartTime;
+
+                    // Anggap "tap" kalau jari tidak banyak bergeser & cepat (bukan drag/pinch)
+                    if (dist < 20 && duration < 600) {
+                        handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                    }
+                }, { passive: true });
+
+                // Untuk testing pakai mouse di desktop/laptop
                 canvas.addEventListener('click', function (e) {
                     handleTap(e.clientX, e.clientY);
                 });
-            });
+
+                console.log('[AR-tap] handler tap terpasang di canvas');
+            }
+
+            if (sceneEl.hasLoaded) {
+                attachHandlers();
+            } else {
+                sceneEl.addEventListener('loaded', attachHandlers);
+            }
 
         })();
 
