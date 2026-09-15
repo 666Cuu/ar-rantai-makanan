@@ -253,6 +253,20 @@
         }
 
 
+        /* ========================= */
+        /* MATIKAN OVERLAY BAWAAN MINDAR */
+        /* (ikon scanning/loading di tengah layar kadang masih */
+        /* menangkap sentuhan walau sudah tidak terlihat) */
+        /* ========================= */
+
+        .mindar-ui-overlay,
+        .mindar-ui-scanning,
+        .mindar-ui-loading,
+        .mindar-ui-compatibility {
+            pointer-events: none !important;
+        }
+
+
     </style>
 
 
@@ -834,6 +848,13 @@
 
             const sceneEl = document.querySelector('a-scene');
             console.log('[AR-tap] script mulai jalan, sceneEl:', sceneEl);
+
+            // Logger diagnostik: cetak elemen apa yang menangkap TIAP sentuhan,
+            // di manapun di layar -- supaya kalau ada overlay tak terduga yang
+            // menghalangi (misalnya UI bawaan MindAR), langsung ketahuan class/id-nya.
+            window.addEventListener('touchstart', function (e) {
+                console.log('[AR-tap][diag] touch kena elemen:', e.target.tagName, e.target.className || '(tanpa class)', e.target.id || '(tanpa id)');
+            }, { capture: true, passive: true });
 
             function handleTap(clientX, clientY) {
                 const camera = sceneEl.camera;
