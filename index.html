@@ -273,6 +273,7 @@
         );
 
         (function () {
+          try {
 
             const sceneEl = document.querySelector('a-scene');
 
@@ -360,15 +361,18 @@
                     handleTap(e.clientX, e.clientY);
                 });
 
-                console.log('[AR-tap] handler tap terpasang di canvas');
+                console.log('[AR-tap] handler tap terpasang di canvas:', canvas);
             }
 
-            if (sceneEl.hasLoaded) {
-                attachHandlers();
-            } else {
-                sceneEl.addEventListener('loaded', attachHandlers);
-            }
+            console.log('[AR-tap] script mulai jalan, sceneEl:', sceneEl);
 
+            // Jangan bergantung pada event 'loaded' -- di MindAR kadang tidak fire normal.
+            // Langsung mulai polling sampai canvas siap.
+            attachHandlers();
+
+          } catch (err) {
+            console.error('[AR-tap] ERROR saat setup:', err);
+          }
         })();
 
 
