@@ -261,64 +261,69 @@
         AFRAME.registerComponent(
             'info-object',
             {
-
                 schema: {
-
-                    name: {
-                        type: 'string'
-                    },
-
-                    role: {
-                        type: 'string'
-                    },
-
-                    description: {
-                        type: 'string'
-                    }
-
-                },
-
-
-                init: function () {
-
-                    const data = this.data;
-
-
-                    /* Klik */
-
-                    this.el.addEventListener(
-                        'click',
-                        function () {
-
-                            showInformation(
-                                data.name,
-                                data.role,
-                                data.description
-                            );
-
-                        }
-                    );
-
-
-                    /* Touch */
-
-                    this.el.addEventListener(
-                        'touchstart',
-                        function () {
-
-                            showInformation(
-                                data.name,
-                                data.role,
-                                data.description
-                            );
-
-                        }
-                    );
-
+                    name: { type: 'string' },
+                    role: { type: 'string' },
+                    description: { type: 'string' }
                 }
-
+                // Tidak ada listener klik/touch di sini --
+                // interaksi sentuh ditangani lewat raycasting manual di bawah,
+                // supaya konsisten kedeteksi untuk semua objek (bukan cuma satu).
             }
         );
+
+        (function () {
+
+            const sceneEl = document.querySelector('a-scene');
+
+            function handleTap(clientX, clientY) {
+                const camera = sceneEl.camera;
+                if (!camera) return;
+
+                const canvas = sceneEl.canvas;
+                const rect = canvas.getBoundingClientRect();
+
+                const mouse = new AFRAME.THREE.Vector2();
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+                const raycaster = new AFRAME.THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+
+                const clickableEls = document.querySelectorAll('.clickable');
+                const objects = [];
+                clickableEls.forEach(function (el) {
+                    if (el.object3D) objects.push(el.object3D);
+                });
+
+                const intersects = raycaster.intersectObjects(objects, true);
+
+                if (intersects.length > 0) {
+                    let obj = intersects[0].object;
+                    while (obj && !obj.el) {
+                        obj = obj.parent;
+                    }
+                    if (obj && obj.el) {
+                        const data = obj.el.getAttribute('info-object');
+                        if (data) {
+                            showInformation(data.name, data.role, data.description);
+                        }
+                    }
+                }
+            }
+
+            sceneEl.addEventListener('loaded', function () {
+                const canvas = sceneEl.canvas;
+
+                // 'click' fires baik dari mouse klik maupun tap 1 jari di HP,
+                // tapi TIDAK fire saat gesture 2 jari (pinch) -- jadi aman dipakai bareng zoom
+                canvas.addEventListener('click', function (e) {
+                    handleTap(e.clientX, e.clientY);
+                });
+            });
+
+        })();
+
 
 
         function showInformation(
@@ -587,9 +592,9 @@
                         rotation="0 0 0"
 
                         scale="
-                            0.020
-                            0.020
-                            0.020
+                            0.12
+                            0.12
+                            0.12
                         "
 
                         info-object="
@@ -910,7 +915,7 @@
                     startDist = getDistance(e.touches);
                     startScale = currentScale;
                 }
-            }, { passive: true });
+            }, { capture: true, passive: true });
 
             window.addEventListener('touchmove', function (e) {
                 if (e.touches.length === 2) {
@@ -919,14 +924,14 @@
                     const ratio = newDist / startDist;
                     applyScale(startScale * ratio);
                 }
-            }, { passive: false });
+            }, { capture: true, passive: false });
 
             // Bonus: scroll wheel untuk testing zoom di laptop/desktop
             window.addEventListener('wheel', function (e) {
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? -0.05 : 0.05;
                 applyScale(currentScale + delta);
-            }, { passive: false });
+            }, { capture: true, passive: false });
 
         })();
 
